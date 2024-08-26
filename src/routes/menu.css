@@ -1,0 +1,118 @@
+.restau-part {
+    display: flex;
+    
+    border: 1px solid #ddd;
+    border-radius: 2rem;
+    overflow: hidden; 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+    background-color: #fff; 
+    width: 100%;
+    max-width:  1200px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 2rem;
+}
+
+.restau-details {
+    flex: 1;
+    padding: 20px; 
+}
+
+.restau-details h1 {
+    margin-top: 0; 
+    font-size: 24px; 
+}
+
+.restau-details p {
+    margin: 5px 0;
+}
+
+.restau-img img {
+    width: 250px; 
+    height: 180px;
+    margin: 1rem;
+
+    
+}
+
+.icon{
+    color: rgb(255, 187, 0);
+}
+
+.free-del{
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+}
+
+.rating{
+    display: flex;
+    flex-direction: row;
+    gap: 0.25rem;
+    align-items: center;
+}
+
+.food-part {
+    display: flex;
+    
+    flex-wrap: wrap; 
+    gap: 20px;
+    width: 100%;
+    max-width:  1200px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 2rem;
+}
+
+.menu-item {
+    display: flex; 
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 3rem;
+    border: 1px solid #ddd; 
+    border-radius: 8px; 
+    overflow: hidden; 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+    background-color: #fff; 
+    width: 100%; 
+    max-width: 1000px; 
+    margin: 0 auto;
+}
+
+.food-image {
+    width: 150px; 
+    height: 120px; 
+    object-fit: cover;
+    border-radius: 8px;
+    margin-top: 2rem;
+    margin-left: 1rem;
+}
+
+.food-details {
+    text-align: end;
+    padding: 20px; 
+}
+
+.food-details h3 {
+    margin-top: 0; 
+    font-size: 18px; 
+}
+
+.food-details p {
+    margin: 5px 0; 
+}
+
+button {
+    padding: 10px 15px; 
+    border: none;
+    border-radius: 5px; 
+    background-color: rgb(220, 171, 24); 
+    color: #fff; 
+    cursor: pointer; 
+    transition: background-color 0.3s; 
+}
+
+button:hover {
+    background-color: orangered; 
+}

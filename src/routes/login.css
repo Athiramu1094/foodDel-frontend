@@ -1,0 +1,128 @@
+
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; 
+    min-height: 100vh;
+    background-color: #f4f4f4;
+    background-image: url('/Cover2.png');
+    background-size: cover;
+    background-position: center;
+    padding: 1rem;
+    
+}
+
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+}
+
+.login-card {
+    background-color: #fff;
+    border-radius: 1rem; 
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px; 
+    max-width: 600px; 
+    width: 100%; 
+    height: 100%;
+    max-height: 600px;
+    margin: 20px; 
+    transition: box-shadow 0.3s ease; 
+}
+
+.login-card h1 {
+    margin-bottom: 20px; 
+    font-size: 24px; 
+    color: #333; 
+    text-align: center; 
+}
+
+.login-card form {
+    display: flex;
+    flex-direction: column; 
+}
+
+.login-card label {
+    margin-bottom: 5px; 
+    font-size: 14px;
+    color: #666; 
+}
+
+.login-card input {
+    margin-bottom: 15px; 
+    padding: 10px; 
+    font-size: 16px; 
+    border: 1px solid #ddd;
+    border-radius: 4px; 
+    transition: border-color 0.3s ease; 
+}
+
+.login-card input:focus {
+    border-color: #007bff; 
+    outline: none;
+}
+
+.login-card button {
+    padding: 10px; 
+    font-size: 16px; 
+    color: black; 
+    background-color: rgb(255, 183, 0);
+    border: none; 
+    border-radius: 4px; 
+    cursor: pointer; 
+    transition: background-color 0.3s ease; 
+    margin-top: 2rem;
+    outline: none;
+    
+}
+
+.login-card button:hover {
+    background-color: rgb(255, 140, 0);
+}
+
+.login-card p {
+    text-align: center; 
+    margin-top: 2rem; 
+}
+
+.login-card .link {
+    
+    text-decoration: none;
+    color: rgb(225, 85, 15);
+}
+
+.login-card .link:hover {
+    text-decoration: underline; 
+}
+
+.bottom-arrow {
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    text-decoration: none;
+}
+
+.bottom-arrow .material-symbols-outlined {
+    display: flex;
+    justify-content: center; 
+    font-size: 48px;
+    color: white;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    margin-bottom: 2rem;
+}
+
+.bottom-arrow .material-symbols-outlined:hover {
+    color: rgb(255, 140, 0);
+}
+
+.error-message {
+    color: red;
+    font-size: 0.875rem; 
+    display: flex;
+    text-align: start;
+    margin-bottom: 1rem;
+}
+

@@ -1,0 +1,89 @@
+h2{
+    color: rgb(93, 92, 92);
+    padding-left: 2rem;
+    margin-top: 1rem;
+    animation:fadeIn 3s
+}
+
+.menu{
+    display: flex;
+    flex-direction: row;
+    margin: 3rem;
+}
+
+.menucard{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 70%; 
+    margin: 0 auto; 
+    text-align: center; 
+}
+
+.menucard img{
+    width: 70%;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+    border-radius: 50%; 
+    transition: transform 0.3s ease;
+}
+.menucard img:hover {
+    transform: scale(1.1); 
+}
+
+.restaurant-list{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    width: 100%;
+    max-width: 1300px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 1rem;
+} 
+
+
+
+
+
+
+
+@media (max-width: 768px) {
+    .menu {
+        flex-direction: column;
+        margin: 2rem;
+    }
+
+    .menucard {
+        width: 90%;
+    }
+
+    .menucard img {
+        width: 90%;
+    }
+}
+
+
+@media (max-width: 480px) {
+    h2 {
+        margin: 1rem;
+    }
+
+    .menu {
+        margin: 1rem;
+        display: flex;
+        gap: 1rem;
+    }
+
+    .menucard {
+        width: 70%;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        
+    }
+
+    .menucard img {
+        width: 70%;
+    }
+}
+
