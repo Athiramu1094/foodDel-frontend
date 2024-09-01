@@ -25,8 +25,8 @@ const Root = () => {
   }, []);
   const location = useLocation();
   const hideHeader =
-    location.pathname === "/login" || location.pathname === "/signup" ||   location.pathname === "/menu" ||
-    location.pathname.startsWith("/restaurant/");
+    location.pathname === "/login" || location.pathname === "/signup" || location.pathname==="/cart" || location.pathname === "/menu" ||
+    location.pathname.startsWith("/restaurant/")  ||     location.pathname.startsWith("/category/");
     console.log(location.pathname);
 
   const handleLogout = async (event) => {
@@ -73,7 +73,7 @@ const Root = () => {
                   </Link>
                 </li>
                 <li>
-                  <Link to="">
+                  <Link to="/cart">
                     <span className="cart material-symbols-outlined">
                       shopping_bag
                     </span>

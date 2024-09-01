@@ -1,0 +1,114 @@
+.cartPage-container{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+    max-width: 1300px;
+    margin-left: auto;
+    margin-right: 5rem;
+}
+
+
+.cart-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    width: 100%;
+    max-width: 400px;
+}
+
+
+.food-img {
+    width: 100px;
+    height: 100px; 
+    object-fit: cover; 
+    border-radius: 8px; 
+    margin-right: 16px; 
+}
+
+
+.cart-article{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.cart-details{
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+}
+
+.quantity-controls {
+    display: flex;
+    flex-direction: row;
+    margin-left: 1rem;
+    margin-right: 0.5rem;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    padding: 5px;
+    background-color: #fff;
+    align-items: center;
+    gap: 5px;
+}
+
+.quantity-controls button {
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    background-color: green;
+    color: white;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.quantity-controls button:hover{
+    background-color: rgb(2, 81, 2);
+}
+
+.quantity-controls span {
+    display: inline-block;
+    width: 30px;
+    text-align: center;
+}
+
+.checkout-card {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+}
+
+.empty-cart{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding-top: 8rem;
+    color: rgb(93, 92, 92);
+}
+
+.emptycart-img{
+    width: 20%;
+}
+
+.emptycart-span{
+    font-size: 2rem;
+}
+
+.home-address{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    color: rgb(255, 149, 0);
+}
+
+.addressdetails{
+    width: 250px;
+    height: 100px;
+}

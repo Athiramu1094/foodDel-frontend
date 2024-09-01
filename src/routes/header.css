@@ -5,6 +5,7 @@
     padding: 10px 20px;
     background-color: #fff; 
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+    
 }
 
 .logoYellow {
@@ -26,5 +27,17 @@
     list-style: none;
     display: flex;
     flex-direction: row;
+    align-items: center;
     gap: 1rem;
+}
+.cart-item{
+    color: black;
+    padding: 10px;
+    border-radius: 1rem;
+    transition: background-color 0.3s ease-out;
+}
+
+.cart-item:hover{
+    background-color: rgb(255, 183, 0);
+    color: white;
 }

@@ -2,6 +2,8 @@ import React from 'react';
 import { useLoaderData } from 'react-router-dom';
 import Header from './header';
 import './menu.css'
+import { useDispatch } from 'react-redux';
+import { addItemToCart } from '../features/cart/cartSlice';
 
 export async function loader({ params }) {
     const restaurantId = params.id;
@@ -34,12 +36,12 @@ export async function loader({ params }) {
 
 function Menu() {
     const { foods, restaurant } = useLoaderData() || { foods: [], restaurant: {} }; 
-
+    const dispatch = useDispatch()
     
 
     return (
         <div>
-             <Header />
+            <Header />
             <section>
                 <div className='restau-part'>
                 <div className='restau-details'>
@@ -76,8 +78,8 @@ function Menu() {
                             <div className='food-details'>
                             <h3>{food.name}</h3>
                             <p>Rating: {food.rating}</p>
-                            <p>Price: ${food.price}</p>
-                            <button>Add</button>
+                            <p>Price: ₹{food.price}</p>
+                            <button onClick={()=>{dispatch(addItemToCart(food))}}>Add</button>
                             </div>
                         </div>
                     )

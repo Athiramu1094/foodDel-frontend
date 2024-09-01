@@ -27,31 +27,31 @@ return (
     <h2>What are you craving for?</h2>
     <div className='menu'>
     <div className='menucard'>
-        <Link to=""><img src="/biriyani.png" alt="Biriyani"/></Link>
+        <Link to="/category/biriyani"><img src="/biriyani.png" alt="Biriyani"/></Link>
         <p>Biriyani</p>
     </div>
     <div className='menucard'>
-        <Link to=""><img src="/chicken.png" alt="Chicken" /></Link>
+        <Link to="/category/chicken"><img src="/chicken.png" alt="Chicken" /></Link>
         <p>Chicken</p>
     </div>
     <div className='menucard'>
-        <Link to=""><img src="/pizza.png" alt="Pizza" /></Link>
+        <Link to="/category/pizza"><img src="/pizza.png" alt="Pizza" /></Link>
         <p>Pizza</p>
     </div>
     <div className='menucard'>
-        <Link to=""><img src="/burger.png" alt="Burger" /></Link>
+        <Link to="/category/burger"><img src="/burger.png" alt="Burger" /></Link>
         <p>Burger</p>
     </div>
     <div className='menucard'>
-        <Link to=""><img src="/salad.png" alt="Salad" /></Link>
+        <Link to="/category/salad"><img src="/salad.png" alt="Salad" /></Link>
         <p>Salad</p>
     </div>
     <div className='menucard'>
-        <Link to=""><img src="/pastry.png" alt="Pastry" /></Link>
+        <Link to="/category/pastry"><img src="/pastry.png" alt="Pastry" /></Link>
         <p>Pastry</p>
     </div>
     <div className='menucard'>
-        <Link to=""><img src="/rolls.png" alt="Rolls" /></Link>
+        <Link to="/category/rolls"><img src="/rolls.png" alt="Rolls" /></Link>
         <p>Rolls</p>
     </div>
 </div>

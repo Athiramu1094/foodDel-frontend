@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,  useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { setUserLoggedIn } from '../features/login/loginSlice';
 import axios from 'axios';
@@ -15,6 +15,9 @@ const Login = () => {
 
     const navigate = useNavigate()
     const dispatch = useDispatch()
+    const location = useLocation();
+
+    const redirectPath = new URLSearchParams(location.search).get('redirect');
 
     const handleLogin = (event) => {
         event.preventDefault();
@@ -28,7 +31,11 @@ const Login = () => {
             .then(response => {
                 
                 dispatch(setUserLoggedIn(true))
-                navigate("/")
+                if (redirectPath) {
+                    navigate(redirectPath);
+                } else {
+                    navigate('/');}
+                
             
                 setEmail('');
                 setPassword('');

@@ -19,15 +19,18 @@ const Header = () => {
               Home
             </Link>
           </li>
-          <li>
-            <Link className='navLInk2'  to="/about">
-              About us
-            </Link>
-          </li>
+        
           <li>
             <Link className='navLInk2'  to="/restaurants">
               Restaurants
             </Link>
+            </li>
+            <li>
+            <Link to="/cart">
+                    <span className="cart-item material-symbols-outlined">
+                      shopping_bag
+                    </span>
+                  </Link>
           </li>
         </ul>
       </nav>
