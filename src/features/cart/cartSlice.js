@@ -7,7 +7,9 @@ initialState: {
 },
     reducers: {
     addItemToCart: (state, action) => {
-    const duplicates = state.items.filter(item => item._id === action.payload._id)
+    
+    const { _id, restaurantId } = action.payload;
+    const duplicates = state.items.filter(item => item._id === _id);
 
     if (duplicates.length === 0) {
         const itemToAdd = { 
@@ -54,11 +56,14 @@ initialState: {
         return item
         }
     })
+  },    
+  removeItem: (state, action) => {
+    state.items = state.items.filter(item => item._id !== action.payload);
   }
   }
 })
 
 // Action creators are generated for each case reducer function
-export const { addItemToCart, incrementQuantity, decrementQuantity } = cartSlice.actions
+export const { addItemToCart, incrementQuantity, decrementQuantity, removeItem } = cartSlice.actions
 
 export default cartSlice.reducer

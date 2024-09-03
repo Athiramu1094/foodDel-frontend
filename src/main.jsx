@@ -17,6 +17,9 @@ import store from './app/store'
 import { Provider } from 'react-redux'
 import  Success  from './routes/success.jsx';
 import Cancel from './routes/cancel.jsx';
+import Aboutus from './routes/aboutus.jsx';
+import Terms from './routes/terms.jsx';
+import PrivacyPolicy from './routes/privacyPolicy.jsx';
 
 const router = createBrowserRouter([
   {
@@ -67,6 +70,21 @@ const router = createBrowserRouter([
     path:"/payment/cancel",
     element:<Cancel/>
   },
+
+  {
+    path:"/aboutus",
+    element:<Aboutus/>
+  },
+
+  {
+    path:"/terms",
+    element:<Terms/>
+  },
+
+  {
+    path:"/privacyPolicy",
+    element:<PrivacyPolicy/>
+  }
   ]
 },
 

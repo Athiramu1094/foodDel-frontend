@@ -27,15 +27,19 @@ const Login = () => {
 
         const data = { email, password };
 
-        axios.post(`http://localhost:3000/api/login`, data, {withCredentials:true})
+        axios.post(`${import.meta.env.VITE_API_URL}/api/login`, data, {withCredentials:true})
             .then(response => {
                 
-                dispatch(setUserLoggedIn(true))
+                const { success, user } = response.data;
+                
+                if (success && user) {
+                
+                    dispatch(setUserLoggedIn({ userLoggedIn: success, user_id: user._id }));
                 if (redirectPath) {
                     navigate(redirectPath);
                 } else {
                     navigate('/');}
-                
+                }
             
                 setEmail('');
                 setPassword('');

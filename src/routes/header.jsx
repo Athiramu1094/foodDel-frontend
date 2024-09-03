@@ -1,10 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { HashLink } from 'react-router-hash-link';
 import './header.css'
 
 const Header = () => {
   return (
-    <main>
+    <main className='header2'>
       <div className='navbar2'>
       <div>
         <Link to="/">
@@ -21,10 +22,10 @@ const Header = () => {
           </li>
         
           <li>
-            <Link className='navLInk2'  to="/restaurants">
-              Restaurants
-            </Link>
-            </li>
+    <HashLink className="navLInk2" to="/#restaurants">
+        Restaurants
+    </HashLink>
+</li>
             <li>
             <Link to="/cart">
                     <span className="cart-item material-symbols-outlined">

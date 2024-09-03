@@ -57,3 +57,13 @@
 .restaurant-card a {
     text-decoration: none;  
 }
+
+
+@media (max-width: 480px) {
+    .restaurant-card{
+        width: 100%;
+        max-width: 350px;
+    }
+}
+
+

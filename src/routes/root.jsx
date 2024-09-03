@@ -1,43 +1,51 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet , useNavigate } from "react-router-dom";
 import { setUserLoggedIn } from "../features/login/loginSlice";
 import { useLocation } from "react-router-dom";
+import { HashLink } from 'react-router-hash-link';
 
 const Root = () => {
   const userLoggedIn = useSelector((state) => state.login.userLoggedIn);
-
+  const userId = useSelector((state) => state.login.user_id);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   useEffect(() => {
     axios
-      .get(`http://localhost:3000/api/checkUser`, {
-        withCredentials: true,
-      })
+      .get(`${import.meta.env.VITE_API_URL}/api/checkUser`, { withCredentials: true })
       .then((response) => {
-        dispatch(setUserLoggedIn(true));
-      }) //req to backend to verify that user is loggedin or not using useeffect,to check if there is cookies or not.
-
+        const { success, user } = response.data;
+        
+        dispatch(setUserLoggedIn({ userLoggedIn: success, userId: user ? user._id : null }));
+      })
       .catch((error) => {
-      
-        dispatch(setUserLoggedIn(false));
+        dispatch(setUserLoggedIn({ userLoggedIn: false, userId: null }));
       });
-  }, []);
+  }, [dispatch]);
+  
+
   const location = useLocation();
   const hideHeader =
     location.pathname === "/login" || location.pathname === "/signup" || location.pathname==="/cart" || location.pathname === "/menu" ||
-    location.pathname.startsWith("/restaurant/")  ||     location.pathname.startsWith("/category/");
-    console.log(location.pathname);
+    location.pathname.startsWith("/restaurant/")  ||     location.pathname.startsWith("/category/") || location.pathname.startsWith("/aboutus") 
+    || location.pathname.startsWith("/terms")  || location.pathname.startsWith("/privacyPolicy") || location.pathname === "/payment/success"
+    ||location.pathname === "/payment/cancel" ;
+    //console.log("Current pathname:", location.pathname);
+    //console.log("Is header hidden?", hideHeader);
 
   const handleLogout = async (event) => {
     event.preventDefault(); // Prevent default link behavior
     try {
       await axios.post(
-        "http://localhost:3000/api/logout",
+        `${import.meta.env.VITE_API_URL}/api/logout`,
         {},
         { withCredentials: true }
       );
-      dispatch(setUserLoggedIn(false)); // Update global state
+      sessionStorage.clear();
+
+      dispatch(setUserLoggedIn({ userLoggedIn: false, userId: null })); // Update global state
       navigate("/login"); // Redirect to login page
     } catch (error) {
       console.error("Logout failed:", error);
@@ -62,16 +70,12 @@ const Root = () => {
                     Home
                   </Link>
                 </li>
+                
                 <li>
-                  <Link className="navlink" to="">
-                    About us
-                  </Link>
-                </li>
-                <li>
-                  <Link className="navlink" to="">
-                    Restaurants
-                  </Link>
-                </li>
+    <HashLink className="navlink" to="/#restaurants">
+        Restaurants
+    </HashLink>
+</li>
                 <li>
                   <Link to="/cart">
                     <span className="cart material-symbols-outlined">
@@ -101,7 +105,7 @@ const Root = () => {
           </div>
           <section>
             <div className="searchSection">
-              <p>Discover the best food & drinks near you</p>
+              <p >Discover the best food & drinks near you</p>
               <div className="searchBar">
                 <span className="material-symbols-outlined searchIcon">
                   search
@@ -120,7 +124,38 @@ const Root = () => {
       <main>
         <Outlet />
       </main>
-      <footer></footer>
+      <footer>
+        <div className="footer-container">
+        <div className="footer-logo">
+        <HashLink to="/#menu">
+              <img className="logo" src="/logoYellow.png" alt="logo" />
+              </HashLink>
+          <span>@ Copyright 2024 FOODIKO. All rights Reserved.</span>
+          <p>Welcome to our online order website! Here, you can browse our wide selection of products and place orders from the comfort of your own home.</p>
+        </div>
+        <div className="footer-links">
+        <Link to="/aboutus" className="footerLink">
+        About us
+        </Link>
+        <Link to="/terms" className="footerLink">
+        Terms & Conditions
+        </Link>
+        <Link to="/privacyPolicy" className="footerLink">
+        Privacy Policy
+        </Link>
+        </div>
+        <div className="delivery-area">
+          <h3>We deliver to:</h3>
+          <ul>
+            <li>Maple Avenue</li>
+            <li>Oak Street</li>
+            <li>Pine Road</li>
+            <li>Elmwood Drive</li>
+            <li>Birch Street</li>
+          </ul>
+        </div>
+        </div>
+      </footer>
     </>
   );
 };

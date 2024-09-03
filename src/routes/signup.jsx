@@ -32,10 +32,11 @@ const Signup = () => {
             password:password
         }
     
-        axios.post(`http://localhost:3000/api/create`, data, {withCredentials:true})
+        axios.post(`${import.meta.env.VITE_API_URL}/api/create`, data, {withCredentials:true})
         .then(response => {
-            console.log(response);
-            dispatch(setUserLoggedIn(true))
+            
+            const { success, user } = response.data; 
+            dispatch(setUserLoggedIn({ userLoggedIn: success, user_id: user._id }));
             navigate("/");
         })
         .catch(error => {

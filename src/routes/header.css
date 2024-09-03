@@ -5,8 +5,18 @@
     padding: 10px 20px;
     background-color: #fff; 
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
-    
+    margin-bottom: 2rem;
 }
+
+.header2 {
+    position: fixed;
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    z-index: 1000; 
+}
+
+
 
 .logoYellow {
     height: 40px; 
@@ -40,4 +50,10 @@
 .cart-item:hover{
     background-color: rgb(255, 183, 0);
     color: white;
+}
+
+@media (max-width: 480px) {
+    .logoYellow{
+        height: 25px;
+    }
 }

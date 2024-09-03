@@ -6,7 +6,7 @@ import RestaurantCard from '../components/restaurantCard';
 
 export async function loader() {
     try{
-        const response = await fetch('http://localhost:3000/restaurant')
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/restaurant`)
         const restaurants =await response.json()
         return { restaurants:restaurants.data };
     }
@@ -23,8 +23,8 @@ const Home = () => {
 
 return (
     <main>
-    <section>
-    <h2>What are you craving for?</h2>
+    <section id='menu'>
+    <h2 className='craving'>What are you craving for?</h2>
     <div className='menu'>
     <div className='menucard'>
         <Link to="/category/biriyani"><img src="/biriyani.png" alt="Biriyani"/></Link>
@@ -57,13 +57,16 @@ return (
 </div>
 </section>
     
-    <section>
+    <section id="restaurants">
     <h2>Our Top Restaurants</h2>
     <div className='restaurant-list'>
     {restaurants.map(restaurant => (
         <RestaurantCard key={restaurant._id} restaurant={restaurant} />
     ))}
 </div>
+    </section>
+    <section>
+        <img className='app' src="./getApp.png" alt="" />
     </section>
 
     </main>
