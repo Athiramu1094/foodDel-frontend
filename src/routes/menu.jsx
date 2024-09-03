@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useLoaderData, Link } from "react-router-dom";
 import Header from "./header";
 import "./menu.css";
@@ -39,8 +39,9 @@ function Menu() {
     restaurant: {},
   };
   const dispatch = useDispatch();
+  const [showPopup, setShowPopup] = useState(false);
 
-  const handleAddToCart = (food, event) => {
+  const handleAddToCart = (food) => {
     const itemData = {
       ...food,
       restaurantId: food.restaurant,
@@ -48,37 +49,11 @@ function Menu() {
     sessionStorage.setItem(food._id, JSON.stringify(itemData));
     dispatch(addItemToCart(itemData));
 
-    // Create the popup element
-    const popup = document.createElement("div");
-    popup.classList.add("cart-popup");
+    // Show the popup
+    setShowPopup(true);
 
-    // Add content to the popup
-    popup.innerHTML = `
-      <p>One item added to the cart. <span id="view-cart"></span></p>
-    `;
-
-    // Append the popup to the body
-    document.body.appendChild(popup);
-
-    // Create and append the Link element
-    const viewCartLink = document.createElement("a");
-    viewCartLink.href = "/cart";
-    viewCartLink.textContent = "View cart";
-    viewCartLink.style.color = "#007bff"; // Optional: style the link
-    viewCartLink.style.textDecoration = "underline"; // Optional: underline the link
-
-    document.getElementById("view-cart").appendChild(viewCartLink);
-
-    // Trigger the show animation
-    requestAnimationFrame(() => {
-      popup.classList.add("show");
-    });
-
-    // Automatically remove the popup after a few seconds
-    setTimeout(() => {
-      popup.classList.remove("show");
-      setTimeout(() => popup.remove(), 500); // Remove after transition ends
-    }, 3000);
+    // Automatically hide the popup after a few seconds
+    setTimeout(() => setShowPopup(false), 3000);
   };
 
   return (
@@ -118,14 +93,24 @@ function Menu() {
               <div className="food-details">
                 <p>Rating: {food.rating}</p>
                 <p>Price: ₹{food.price}</p>
-                <button onClick={(event) => handleAddToCart(food, event)}>
-                  Add
-                </button>
+                <button onClick={() => handleAddToCart(food)}>Add</button>
               </div>
             </div>
           ))}
         </div>
       </section>
+
+      {/* Conditional rendering of the popup */}
+      {showPopup && (
+        <div className="cart-popup show">
+          <p>
+            One item added to the cart.{" "}
+            <Link to="/cart" style={{ color: "white", textDecoration: "underline" }}>
+              View cart
+            </Link>
+          </p>
+        </div>
+      )}
     </div>
   );
 }
