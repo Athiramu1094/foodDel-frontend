@@ -28,31 +28,31 @@ return (
     <div className='menu'>
     <div className='menucard'>
         <Link to="/category/biriyani"><img src="/biriyani.png" alt="Biriyani"/></Link>
-        <p>Biriyani</p>
+        <span>Biriyani</span>
     </div>
     <div className='menucard'>
         <Link to="/category/chicken"><img src="/chicken.png" alt="Chicken" /></Link>
-        <p>Chicken</p>
+        <span>Chicken</span>
     </div>
     <div className='menucard'>
         <Link to="/category/pizza"><img src="/pizza.png" alt="Pizza" /></Link>
-        <p>Pizza</p>
+        <span>Pizza</span>
     </div>
     <div className='menucard'>
         <Link to="/category/burger"><img src="/burger.png" alt="Burger" /></Link>
-        <p>Burger</p>
+        <span>Burger</span>
     </div>
     <div className='menucard'>
         <Link to="/category/salad"><img src="/salad.png" alt="Salad" /></Link>
-        <p>Salad</p>
+        <span>Salad</span>
     </div>
     <div className='menucard'>
         <Link to="/category/pastry"><img src="/pastry.png" alt="Pastry" /></Link>
-        <p>Pastry</p>
+        <span>Pastry</span>
     </div>
     <div className='menucard'>
         <Link to="/category/rolls"><img src="/rolls.png" alt="Rolls" /></Link>
-        <p>Rolls</p>
+        <span>Rolls</span>
     </div>
 </div>
 </section>

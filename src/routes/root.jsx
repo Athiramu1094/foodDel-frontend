@@ -145,7 +145,7 @@ const Root = () => {
         </Link>
         </div>
         <div className="delivery-area">
-          <h3>We deliver to:</h3>
+          <h3>We deliver here</h3>
           <ul>
             <li>Maple Avenue</li>
             <li>Oak Street</li>
