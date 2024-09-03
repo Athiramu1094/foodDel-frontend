@@ -1,5 +1,5 @@
 import React from "react";
-import { useLoaderData } from "react-router-dom";
+import { useLoaderData, Link } from "react-router-dom";
 import Header from "./header";
 import "./menu.css";
 import { useDispatch } from "react-redux";
@@ -41,40 +41,45 @@ function Menu() {
   const dispatch = useDispatch();
 
   const handleAddToCart = (food, event) => {
-  
-  
     const itemData = {
       ...food,
       restaurantId: food.restaurant,
     };
     sessionStorage.setItem(food._id, JSON.stringify(itemData));
     dispatch(addItemToCart(itemData));
-  
-    
+
+    // Create the popup element
     const popup = document.createElement("div");
     popup.classList.add("cart-popup");
-    
-    
+
+    // Add content to the popup
     popup.innerHTML = `
-      <p>One item added to the cart. <a href="/cart">View cart</a></p>
+      <p>One item added to the cart. <span id="view-cart"></span></p>
     `;
-  
-    
+
+    // Append the popup to the body
     document.body.appendChild(popup);
-    
-  
-    
+
+    // Create and append the Link element
+    const viewCartLink = document.createElement("a");
+    viewCartLink.href = "/cart";
+    viewCartLink.textContent = "View cart";
+    viewCartLink.style.color = "#007bff"; // Optional: style the link
+    viewCartLink.style.textDecoration = "underline"; // Optional: underline the link
+
+    document.getElementById("view-cart").appendChild(viewCartLink);
+
+    // Trigger the show animation
     requestAnimationFrame(() => {
       popup.classList.add("show");
     });
-  
+
+    // Automatically remove the popup after a few seconds
     setTimeout(() => {
       popup.classList.remove("show");
-      setTimeout(() => popup.remove(), 500); 
+      setTimeout(() => popup.remove(), 500); // Remove after transition ends
     }, 3000);
   };
-  
-  
 
   return (
     <div>
@@ -87,7 +92,7 @@ function Menu() {
             <p>{restaurant.cuisine}</p>
             <div className="rating">
               <p>{restaurant.rating}</p>
-              <span class="icon material-symbols-outlined">kid_star</span>
+              <span className="icon material-symbols-outlined">kid_star</span>
             </div>
             <div className="free-del">
               <p>Order above 500 for free delivery</p>
@@ -114,8 +119,8 @@ function Menu() {
                 <p>Rating: {food.rating}</p>
                 <p>Price: ₹{food.price}</p>
                 <button onClick={(event) => handleAddToCart(food, event)}>
-  Add
-</button>
+                  Add
+                </button>
               </div>
             </div>
           ))}
