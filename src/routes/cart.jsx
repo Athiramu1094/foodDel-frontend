@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "./header";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -18,56 +18,70 @@ const Cart = () => {
   const userId = useSelector((state) => state.login.user_id);
   const restaurantId = items.length > 0 ? items[0].restaurantId : null;
   const [address, setAddress] = useState("");
+  const [cartItems, setCartItems] = useState([]);
+  const [discount, setDiscount] = useState(0); 
+  const [showCouponOptions, setShowCouponOptions] = useState(false);
+  const [couponApplied, setCouponApplied] = useState(false);
+  const [couponError, setCouponError] = useState(""); 
 
-  
+  useEffect(() => {
+    const session_items = [];
+    for (let i = 0; i < sessionStorage.length; i++) {
+      const key = sessionStorage.key(i);
+      const item = JSON.parse(sessionStorage.getItem(key));
+      session_items.push(item);
+    }
+    setCartItems(session_items);
+  }, []);
+
+  if (items.length === 0) {
+    items = cartItems;
+  }
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const totalPrice = items.reduce((total, item) => {
-    return total + item.price * item.quantity;
-  }, 0);
+
+  const totalPrice = items.reduce((total, item) => total + item.price * item.quantity, 0);
+  const finalPrice = totalPrice - discount; // Calculate final price after discount
 
   const handleAddressChange = (event) => {
     setAddress(event.target.value);
   };
 
   const handleRemoveItem = (itemId) => {
-    
     dispatch(removeItem(itemId));
   };
 
-  function getAllSessionStorageItems() {
-    let foods = [];
-
-    
-    for (let i = 0; i < sessionStorage.length; i++) {
-      let key = sessionStorage.key(i);
-      let value = sessionStorage.getItem(key);
-      try {
-        value = JSON.parse(value);
-      } catch (e) {
-        
-        continue;
-      }
-      
-      foods.push(value);
+  const applyCoupon = (type) => {
+    if (type === "10%" && totalPrice > 200) {
+      setDiscount(totalPrice * 0.1);
+      setCouponApplied(true);
+      setCouponError("");
+    } else if (type === "25%" && totalPrice > 500) {
+      setDiscount(totalPrice * 0.25);
+      setCouponApplied(true);
+      setCouponError("");
+    } else {
+      setDiscount(0); 
+      setCouponApplied(false);
+      setCouponError(type === "10%" ? "Coupon requires a minimum of ₹200" : "Coupon requires a minimum of ₹500");
     }
+    setShowCouponOptions(false); 
+  };
 
-    return foods;
-  }
-
-  if (items.length == 0) {
-    items = getAllSessionStorageItems();
-  
-  }
+  const toggleCouponOptions = () => {
+    setShowCouponOptions(!showCouponOptions);
+    setCouponApplied(false); 
+    setCouponError(""); 
+  };
 
   const makePayment = async () => {
     if (!userLoggedIn) {
-      // If the user is not logged in, redirect them to login or signup
+    
       return navigate("/login?redirect=/cart");
     }
 
     try {
-      
       const createOrderResponse = await axiosInstance.post("/order/", {
         items,
         address,
@@ -107,34 +121,19 @@ const Cart = () => {
     }
   };
 
-
-
   return (
     <main>
       <Header />
       {items.length === 0 ? (
         <div className="empty-cart">
-          <img
-            className="emptycart-img"
-            src="/emptycart.png"
-            alt="Empty cart"
-          />
+          <img className="emptycart-img" src="/emptycart.png" alt="Empty cart" />
           <h3>
-            <span className="emptycart-span">Oops!</span> <br /> Your cart looks
-            empty...
+            <span className="emptycart-span">Oops!</span> <br /> Your cart looks empty...
           </h3>
         </div>
       ) : (
         <div className="cartPage-container">
           <div className="gif-and-form">
-            <dotlottie-player
-              src="https://lottie.host/2e0e51e6-497e-421a-9939-5d4fb48b137e/fdDdcRKeQ3.json"
-              background="transparent"
-              speed="1"
-              style={{ width: "300px", height: "300px" }}
-              loop
-              autoplay
-            ></dotlottie-player>
             <section className="delivery-section">
               <div className="home-form">
                 <div className="home-address">
@@ -165,25 +164,22 @@ const Cart = () => {
                     <span>₹{item.price}</span>
                   </div>
                   <div className="qnty-delete">
-                  <div className="quantity-controls">
-                    <button
-                      className="cartpage-btn"
-                      onClick={() => dispatch(decrementQuantity(item._id))}
-                    >
-                      -
-                    </button>
-                    <span>{item.quantity ? item.quantity : 1}</span>
-                    <button
-                      className="cartpage-btn"
-                      onClick={() => dispatch(incrementQuantity(item._id))}
-                    >
-                      +
-                    </button>
-                  </div>
-                  <button
-                      className="delete-btn"
-                      onClick={() => handleRemoveItem(item._id)}
-                    >
+                    <div className="quantity-controls">
+                      <button
+                        className="cartpage-btn"
+                        onClick={() => dispatch(decrementQuantity(item._id))}
+                      >
+                        -
+                      </button>
+                      <span>{item.quantity ? item.quantity : 1}</span>
+                      <button
+                        className="cartpage-btn"
+                        onClick={() => dispatch(incrementQuantity(item._id))}
+                      >
+                        +
+                      </button>
+                    </div>
+                    <button className="delete-btn" onClick={() => handleRemoveItem(item._id)}>
                       Remove Item
                     </button>
                   </div>
@@ -192,21 +188,39 @@ const Cart = () => {
             </article>
             <section>
               <h3>Total Price ₹{totalPrice}</h3>
+
+              {/* Coupon Section */}
               <div className="coupon">
-                <span className="material-symbols-outlined">
-                  credit_card_heart
-                </span>
-                <h4>Apply Coupon</h4>
+                <span className="material-symbols-outlined">credit_card_heart</span>
+                <button className="coupon-btn" onClick={toggleCouponOptions}>Apply Coupon</button>
               </div>
+
+              {showCouponOptions && !couponApplied && (
+                <div className="coupon-options">
+                  <button className="offer-btn" onClick={() => applyCoupon("10%")}>
+                    <span className="offer-name">FOODI10 | Apply Now</span><br />
+                    10% off on orders above ₹200
+                  </button>
+                  <button className="offer-btn" onClick={() => applyCoupon("25%")}>
+                    <span className="offer-name">FOODI25 | Apply Now</span><br />
+                    25% off on orders above ₹500
+                  </button>
+                </div>
+              )}
+
+              {couponError && (
+                <p className="coupon-error">{couponError}</p>
+              )}
+
+              {couponApplied && !couponError && (
+                <div className="discount-summary">
+                  <p className="coupon-applied">Coupon applied. You save ₹{discount.toFixed(2)}!</p>
+                  <h4>You need to pay: ₹{finalPrice.toFixed(2)}</h4>
+                </div>
+              )}
+
               <div className="cancellation">
-                <h2>
-                  Review your order and address details to avoid cancellations
-                </h2>
-                <p>
-                  Note: If you cancel within 60 seconds of placing your order, a
-                  100% refund will be issued. No refund for cancellations made
-                  after 60 seconds.
-                </p>
+                <p>Review your order and address details to avoid cancellations</p>
                 <h3>Avoid cancellation as it leads to food wastage.</h3>
               </div>
             </section>
