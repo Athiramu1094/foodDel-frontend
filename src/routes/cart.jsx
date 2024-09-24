@@ -17,6 +17,13 @@ const Cart = () => {
   const items = useSelector((state) => state.cart.items);
   const userLoggedIn = useSelector((state) => state.login.userLoggedIn);
   const userId = useSelector((state) => state.login.user_id);
+  console.log("User logged in:", userLoggedIn); 
+console.log("User ID from Redux:", userId);
+
+if (!userId) {
+  console.error("User ID is missing. Make sure the user is logged in.");
+  return; 
+}
   const restaurantId = items.length > 0 ? items[0].restaurantId : null;
   const [address, setAddress] = useState("");
   const [discount, setDiscount] = useState(0);
@@ -85,18 +92,29 @@ const Cart = () => {
     if (!userLoggedIn) {
       return navigate("/login?redirect=/cart");
     }
-
+  
     try {
+      console.log("Making payment...");
+      console.log("User ID:", userId);
+      console.log("Restaurant ID:", restaurantId);
+      console.log("Address:", address);
+      console.log("Items:", items); 
+      
+    
+      if (!address || items.length === 0) {
+        console.error("Missing address or items");
+        return; 
+      }
+  
       const createOrderResponse = await axiosInstance.post("/order/", {
         items,
         address,
         userId,
         restaurantId,
       });
-
-      console.log("Order Created Response:", createOrderResponse.data);
-
-      
+  
+      console.log("Order creation response:", createOrderResponse.data); 
+  
       const stripe = await loadStripe(import.meta.env.VITE_STRIPE_publishable_key);
       const sanitizedItems = items.map((item) => ({
         _id: item._id,
@@ -104,21 +122,26 @@ const Cart = () => {
         price: item.price,
         quantity: item.quantity,
       }));
-
   
-      
+      console.log("Sanitized items for payment:", sanitizedItems);
+  
       const response = await axiosInstance({
         url: "/payment/create-checkout-session",
         method: "post",
         data: { items: sanitizedItems },
         withCredentials: true,
-    });
-    
+      });
+  
       console.log("Checkout Session Response:", response.data); 
       const sessionId = response?.data?.sessionId;
-
+  
+      if (!sessionId) {
+        console.error("Session ID not received");
+        return;
+      }
+  
       const result = await stripe.redirectToCheckout({ sessionId: sessionId });
-
+  
       if (result.error) {
         console.error("Stripe checkout error:", result.error.message);
       }
@@ -126,6 +149,7 @@ const Cart = () => {
       console.error("Payment error:", error.message);
     }
   };
+  
 
   return (
     <main>
