@@ -94,6 +94,9 @@ const Cart = () => {
         restaurantId,
       });
 
+      console.log("Order Created Response:", createOrderResponse.data);
+
+      
       const stripe = await loadStripe(import.meta.env.VITE_STRIPE_publishable_key);
       const sanitizedItems = items.map((item) => ({
         _id: item._id,
@@ -102,12 +105,16 @@ const Cart = () => {
         quantity: item.quantity,
       }));
 
+  
+      
       const response = await axiosInstance({
         url: "/payment/create-checkout-session",
         method: "post",
         data: { items: sanitizedItems },
-      });
-
+        withCredentials: true,
+    });
+    
+      console.log("Checkout Session Response:", response.data); 
       const sessionId = response?.data?.sessionId;
 
       const result = await stripe.redirectToCheckout({ sessionId: sessionId });
