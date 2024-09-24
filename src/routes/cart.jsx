@@ -5,7 +5,7 @@ import {
   decrementQuantity,
   incrementQuantity,
   removeItem,
-  addItemToCart, // Import the addItemToCart action
+  addItemToCart, 
 } from "../features/cart/cartSlice";
 import { loadStripe } from "@stripe/stripe-js/pure";
 import { axiosInstance } from "../../config/axiosInstance";
@@ -17,6 +17,9 @@ const Cart = () => {
   const items = useSelector((state) => state.cart.items);
   const userLoggedIn = useSelector((state) => state.login.userLoggedIn);
   const userId = useSelector((state) => state.login.user_id);
+
+  console.log("User ID from Redux:", userId);
+
   const restaurantId = items.length > 0 ? items[0].restaurantId : null;
   const [address, setAddress] = useState("");
   const [discount, setDiscount] = useState(0);
@@ -35,7 +38,7 @@ const Cart = () => {
       if (item) sessionItems.push(item);
     }
     if (sessionItems.length) {
-      sessionItems.forEach(item => dispatch(addItemToCart(item))); // Use addItemToCart to load items
+      sessionItems.forEach(item => dispatch(addItemToCart(item))); 
     }
   }, [dispatch]);
 
@@ -81,18 +84,27 @@ const Cart = () => {
   };
 
   const makePayment = async () => {
+    console.log("Initiating payment process...");
+  
     if (!userLoggedIn) {
+      console.log("User not logged in, redirecting to login page.");
       return navigate("/login?redirect=/cart");
     }
-
+  
+    console.log("User ID:", userId);
+    console.log("Address:", address);
+    console.log("Items in cart:", items);
+  
     try {
+      console.log("Creating order...");
       const createOrderResponse = await axiosInstance.post("/order/", {
         items,
         address,
         userId,
         restaurantId,
       });
-
+      console.log("Order created successfully:", createOrderResponse.data);
+  
       const stripe = await loadStripe(import.meta.env.VITE_STRIPE_publishable_key);
       const sanitizedItems = items.map((item) => ({
         _id: item._id,
@@ -100,24 +112,34 @@ const Cart = () => {
         price: item.price,
         quantity: item.quantity,
       }));
-
+      console.log("Sanitized items for payment:", sanitizedItems);
+  
+      console.log("Creating checkout session...");
       const response = await axiosInstance.post("/payment/create-checkout-session", {
         items: sanitizedItems,
       });
-
-      console.log("Checkout Session Response:", response.data); 
+      console.log("Checkout session response:", response.data); 
       const sessionId = response?.data?.sessionId;
-
+  
+      console.log("Session ID for checkout:", sessionId);
+      if (!sessionId) {
+        console.error("No session ID returned from checkout session creation.");
+        return;
+      }
+  
+      console.log("Redirecting to checkout with session ID:", sessionId);
       const result = await stripe.redirectToCheckout({ sessionId: sessionId });
-
+  
       if (result.error) {
         console.error("Stripe checkout error:", result.error.message);
+      } else {
+        console.log("Checkout redirection successful.");
       }
     } catch (error) {
       console.error("Payment error:", error);
     }
   };
-
+  
   return (
     <main>
       <Header />
