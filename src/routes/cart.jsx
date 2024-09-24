@@ -5,7 +5,7 @@ import {
   decrementQuantity,
   incrementQuantity,
   removeItem,
-  setCartItems, // Action to set items from session storage
+  addItemToCart, // Import the addItemToCart action
 } from "../features/cart/cartSlice";
 import { loadStripe } from "@stripe/stripe-js/pure";
 import { axiosInstance } from "../../config/axiosInstance";
@@ -17,13 +17,6 @@ const Cart = () => {
   const items = useSelector((state) => state.cart.items);
   const userLoggedIn = useSelector((state) => state.login.userLoggedIn);
   const userId = useSelector((state) => state.login.user_id);
-  console.log("User logged in:", userLoggedIn); 
-console.log("User ID from Redux:", userId);
-
-if (!userId) {
-  console.error("User ID is missing. Make sure the user is logged in.");
-  return; 
-}
   const restaurantId = items.length > 0 ? items[0].restaurantId : null;
   const [address, setAddress] = useState("");
   const [discount, setDiscount] = useState(0);
@@ -42,12 +35,11 @@ if (!userId) {
       if (item) sessionItems.push(item);
     }
     if (sessionItems.length) {
-      dispatch(setCartItems(sessionItems)); // Load items from session storage into Redux
+      sessionItems.forEach(item => dispatch(addItemToCart(item))); // Use addItemToCart to load items
     }
   }, [dispatch]);
 
   useEffect(() => {
-    // Update session storage whenever cart items change
     sessionStorage.clear();
     items.forEach((item) => {
       sessionStorage.setItem(item._id, JSON.stringify(item));
@@ -55,7 +47,7 @@ if (!userId) {
   }, [items]);
 
   const totalPrice = items.reduce((total, item) => total + item.price * item.quantity, 0);
-  const finalPrice = totalPrice - discount; // Calculate final price after discount
+  const finalPrice = Math.max(totalPrice - discount, 0);
 
   const handleAddressChange = (event) => {
     setAddress(event.target.value);
@@ -92,29 +84,15 @@ if (!userId) {
     if (!userLoggedIn) {
       return navigate("/login?redirect=/cart");
     }
-  
+
     try {
-      console.log("Making payment...");
-      console.log("User ID:", userId);
-      console.log("Restaurant ID:", restaurantId);
-      console.log("Address:", address);
-      console.log("Items:", items); 
-      
-    
-      if (!address || items.length === 0) {
-        console.error("Missing address or items");
-        return; 
-      }
-  
       const createOrderResponse = await axiosInstance.post("/order/", {
         items,
         address,
         userId,
         restaurantId,
       });
-  
-      console.log("Order creation response:", createOrderResponse.data); 
-  
+
       const stripe = await loadStripe(import.meta.env.VITE_STRIPE_publishable_key);
       const sanitizedItems = items.map((item) => ({
         _id: item._id,
@@ -122,34 +100,23 @@ if (!userId) {
         price: item.price,
         quantity: item.quantity,
       }));
-  
-      console.log("Sanitized items for payment:", sanitizedItems);
-  
-      const response = await axiosInstance({
-        url: "/payment/create-checkout-session",
-        method: "post",
-        data: { items: sanitizedItems },
-        withCredentials: true,
+
+      const response = await axiosInstance.post("/payment/create-checkout-session", {
+        items: sanitizedItems,
       });
-  
+
       console.log("Checkout Session Response:", response.data); 
       const sessionId = response?.data?.sessionId;
-  
-      if (!sessionId) {
-        console.error("Session ID not received");
-        return;
-      }
-  
+
       const result = await stripe.redirectToCheckout({ sessionId: sessionId });
-  
+
       if (result.error) {
         console.error("Stripe checkout error:", result.error.message);
       }
     } catch (error) {
-      console.error("Payment error:", error.message);
+      console.error("Payment error:", error);
     }
   };
-  
 
   return (
     <main>
@@ -226,31 +193,15 @@ if (!userId) {
               </div>
 
               {showCouponOptions && !couponApplied && (
-                <div className="coupon-options">
-                  <button className="offer-btn" onClick={() => applyCoupon("10%")}>
-                    <span className="offer-name">FOODI10 | Apply Now</span><br />
-                    10% off on orders above ₹200
-                  </button>
-                  <button className="offer-btn" onClick={() => applyCoupon("25%")}>
-                    <span className="offer-name">FOODI25 | Apply Now</span><br />
-                    25% off on orders above ₹500
-                  </button>
+                <div>
+                  <button className="apply-coupon" onClick={() => applyCoupon("10%")}>10% Off on orders above ₹200</button>
+                  <button className="apply-coupon" onClick={() => applyCoupon("25%")}>25% Off on orders above ₹500</button>
+                  {couponError && <p className="coupon-error">{couponError}</p>}
                 </div>
               )}
 
-              {couponError && <p className="coupon-error">{couponError}</p>}
-
-              {couponApplied && !couponError && (
-                <div className="discount-summary">
-                  <p className="coupon-applied">Coupon applied. You save ₹{discount.toFixed(2)}!</p>
-                  <h4>You need to pay: ₹{finalPrice.toFixed(2)}</h4>
-                </div>
-              )}
-
-              <div className="cancellation">
-                <p>Review your order and address details to avoid cancellations</p>
-                <h3>Avoid cancellation as it leads to food wastage.</h3>
-              </div>
+              {couponApplied && <h3>Discount ₹{discount}</h3>}
+              <h3>Final Price ₹{finalPrice}</h3>
             </section>
           </div>
         </div>
