@@ -15,7 +15,7 @@ const Home = () => {
           throw new Error("Failed to fetch restaurants");
         }
         const data = await response.json();
-        console.log("Fetched Data:", data);
+        
         setRestaurants(data.data || []); // Set the restaurants from data.data array
       } catch (error) {
         console.error("Error fetching restaurants:", error);

@@ -5,6 +5,7 @@ import {
   decrementQuantity,
   incrementQuantity,
   removeItem,
+  setCartItems, // Action to set items from session storage
 } from "../features/cart/cartSlice";
 import { loadStripe } from "@stripe/stripe-js/pure";
 import { axiosInstance } from "../../config/axiosInstance";
@@ -13,33 +14,38 @@ import { useNavigate } from "react-router-dom";
 import "./cart.css";
 
 const Cart = () => {
-  let items = useSelector((state) => state.cart.items);
+  const items = useSelector((state) => state.cart.items);
   const userLoggedIn = useSelector((state) => state.login.userLoggedIn);
   const userId = useSelector((state) => state.login.user_id);
   const restaurantId = items.length > 0 ? items[0].restaurantId : null;
   const [address, setAddress] = useState("");
-  const [cartItems, setCartItems] = useState([]);
-  const [discount, setDiscount] = useState(0); 
+  const [discount, setDiscount] = useState(0);
   const [showCouponOptions, setShowCouponOptions] = useState(false);
   const [couponApplied, setCouponApplied] = useState(false);
-  const [couponError, setCouponError] = useState(""); 
-
-  useEffect(() => {
-    const session_items = [];
-    for (let i = 0; i < sessionStorage.length; i++) {
-      const key = sessionStorage.key(i);
-      const item = JSON.parse(sessionStorage.getItem(key));
-      session_items.push(item);
-    }
-    setCartItems(session_items);
-  }, []);
-
-  if (items.length === 0) {
-    items = cartItems;
-  }
+  const [couponError, setCouponError] = useState("");
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const sessionItems = [];
+    for (let i = 0; i < sessionStorage.length; i++) {
+      const key = sessionStorage.key(i);
+      const item = JSON.parse(sessionStorage.getItem(key));
+      if (item) sessionItems.push(item);
+    }
+    if (sessionItems.length) {
+      dispatch(setCartItems(sessionItems)); // Load items from session storage into Redux
+    }
+  }, [dispatch]);
+
+  useEffect(() => {
+    // Update session storage whenever cart items change
+    sessionStorage.clear();
+    items.forEach((item) => {
+      sessionStorage.setItem(item._id, JSON.stringify(item));
+    });
+  }, [items]);
 
   const totalPrice = items.reduce((total, item) => total + item.price * item.quantity, 0);
   const finalPrice = totalPrice - discount; // Calculate final price after discount
@@ -62,22 +68,21 @@ const Cart = () => {
       setCouponApplied(true);
       setCouponError("");
     } else {
-      setDiscount(0); 
+      setDiscount(0);
       setCouponApplied(false);
       setCouponError(type === "10%" ? "Coupon requires a minimum of ₹200" : "Coupon requires a minimum of ₹500");
     }
-    setShowCouponOptions(false); 
+    setShowCouponOptions(false);
   };
 
   const toggleCouponOptions = () => {
     setShowCouponOptions(!showCouponOptions);
-    setCouponApplied(false); 
-    setCouponError(""); 
+    setCouponApplied(false);
+    setCouponError("");
   };
 
   const makePayment = async () => {
     if (!userLoggedIn) {
-    
       return navigate("/login?redirect=/cart");
     }
 
@@ -89,10 +94,7 @@ const Cart = () => {
         restaurantId,
       });
 
-      const stripe = await loadStripe(
-        import.meta.env.VITE_STRIPE_publishable_key
-      );
-
+      const stripe = await loadStripe(import.meta.env.VITE_STRIPE_publishable_key);
       const sanitizedItems = items.map((item) => ({
         _id: item._id,
         name: item.name,
@@ -100,7 +102,6 @@ const Cart = () => {
         quantity: item.quantity,
       }));
 
-      // Send sanitized data to the backend
       const response = await axiosInstance({
         url: "/payment/create-checkout-session",
         method: "post",
@@ -109,9 +110,7 @@ const Cart = () => {
 
       const sessionId = response?.data?.sessionId;
 
-      const result = await stripe.redirectToCheckout({
-        sessionId: sessionId,
-      });
+      const result = await stripe.redirectToCheckout({ sessionId: sessionId });
 
       if (result.error) {
         console.error("Stripe checkout error:", result.error.message);
@@ -208,9 +207,7 @@ const Cart = () => {
                 </div>
               )}
 
-              {couponError && (
-                <p className="coupon-error">{couponError}</p>
-              )}
+              {couponError && <p className="coupon-error">{couponError}</p>}
 
               {couponApplied && !couponError && (
                 <div className="discount-summary">

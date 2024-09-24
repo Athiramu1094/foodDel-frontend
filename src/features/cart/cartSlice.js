@@ -1,69 +1,51 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 export const cartSlice = createSlice({
-name: 'cart',
-initialState: {
+  name: 'cart',
+  initialState: {
     items: []
-},
-    reducers: {
+  },
+  reducers: {
     addItemToCart: (state, action) => {
-    
-    const { _id, restaurantId } = action.payload;
-    const duplicates = state.items.filter(item => item._id === _id);
+      const { _id, restaurantId } = action.payload;
+      const duplicates = state.items.filter(item => item._id === _id);
 
-    if (duplicates.length === 0) {
-        const itemToAdd = { 
-        ...action.payload,
-        quantity: 1
-        }
-        state.items.push(itemToAdd)
-    } else {
-        state.items = state.items.map(item => {
-            if (item._id === action.payload._id) {
-            return {
-            ...item,
-            quantity: item.quantity + 1
-            }
-        } else {
-            return item
-        }
-        })
-    }
+      if (duplicates.length > 0) {
+        // Increase the quantity if the item already exists
+        const existingItem = state.items.find(item => item._id === _id);
+        existingItem.quantity += 1;
+      } else {
+        // Add new item
+        state.items.push({ ...action.payload, quantity: 1 });
+      }
+    },
+    removeItem: (state, action) => {
+      const updatedItems = state.items.filter(item => item._id !== action.payload);
+      state.items = updatedItems;
     },
     incrementQuantity: (state, action) => {
-        
-        state.items = state.items.map(item => {
-        if (item._id === action.payload) {
-        return {
-            ...item,
-            quantity: item.quantity + 1
-        }
-        } else {
-            return item
-        }
-    })
+      const item = state.items.find(item => item._id === action.payload);
+      if (item) {
+        item.quantity += 1;
+      }
     },
+    decrementQuantity: (state, action) => {
+      const item = state.items.find(item => item._id === action.payload);
+      if (item && item.quantity > 1) {
+        item.quantity -= 1;
+      } else {
+        // Remove item if quantity is 1
+        state.items = state.items.filter(item => item._id !== action.payload);
+      }
+    },
+    setCartItems: (state, action) => {
+      state.items = action.payload;
+    }
+  },
+});
 
-    decrementQuantity:(state, action) =>{
-        state.items = state.items.map(item => {
-        if (item._id === action.payload) {
-        return {
-            ...item,
-            quantity: Math.max(item.quantity - 1, 1) // Ensure quantity doesn't go below 1
+// Export actions
+export const { addItemToCart, removeItem, incrementQuantity, decrementQuantity, setCartItems } = cartSlice.actions;
 
-        }
-        } else {
-        return item
-        }
-    })
-  },    
-  removeItem: (state, action) => {
-    state.items = state.items.filter(item => item._id !== action.payload);
-  }
-  }
-})
-
-// Action creators are generated for each case reducer function
-export const { addItemToCart, incrementQuantity, decrementQuantity, removeItem } = cartSlice.actions
-
-export default cartSlice.reducer
+// Export reducer
+export default cartSlice.reducer;
