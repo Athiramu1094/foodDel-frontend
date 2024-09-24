@@ -7,7 +7,7 @@ import {
 import Root from "./routes/root";
 import './index.css'
 import ErrorPage from "./errorPage";
-import Home, {loader as homeLoader} from './routes/home';
+import Home from './routes/home';
 import Menu, {loader as menuLoader} from './routes/menu.jsx'
 import Category, {loader as categoryLoader} from './routes/category.jsx';
 import Signup from './routes/signup';
@@ -31,7 +31,7 @@ const router = createBrowserRouter([
     {
       path:"/",
       element:<Home/>,
-      loader:homeLoader
+      
     },
 
     {
