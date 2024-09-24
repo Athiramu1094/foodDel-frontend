@@ -1,22 +1,24 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit';
 
 export const loginSlice = createSlice({
     name: 'login',
     initialState: {
-    userLoggedIn:false,
-    user_id: null,
-},
+        userLoggedIn: false,
+        user_id: null,
+    },
     reducers: {
-        setUserLoggedIn:(state, action)=>{
-            
+        setUserLoggedIn: (state, action) => {
             state.userLoggedIn = action.payload.userLoggedIn;
-            state.user_id = action.payload.user_id;
+            state.user_id = action.payload.user_id; // This should come from the login API response
+        },
+        clearUser: (state) => {
+            state.userLoggedIn = false;
+            state.user_id = null;
+        }
     }
-    
-    }
-})
+});
 
-// Action creators are generated for each case reducer function
-export const { setUserLoggedIn } = loginSlice.actions
+// Action creators
+export const { setUserLoggedIn, clearUser } = loginSlice.actions;
 
-export default loginSlice.reducer
+export default loginSlice.reducer;
