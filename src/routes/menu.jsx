@@ -42,17 +42,25 @@ function Menu() {
   const [showPopup, setShowPopup] = useState(false);
 
   const handleAddToCart = (food) => {
-    const itemData = {
-      ...food,
-      restaurantId: food.restaurant,
-    };
+    const existingItem = sessionStorage.getItem(food._id);
+    let itemData;
+
+    if (existingItem) {
+        itemData = JSON.parse(existingItem);
+        itemData.quantity = (itemData.quantity || 1) + 1;
+    } else {
+        itemData = {
+            ...food,
+            restaurantId: food.restaurant,
+            quantity: 1
+        };
+    }
+
     sessionStorage.setItem(food._id, JSON.stringify(itemData));
     dispatch(addItemToCart(itemData));
 
-    // Show the popup
     setShowPopup(true);
 
-    // Automatically hide the popup after a few seconds
     setTimeout(() => setShowPopup(false), 3000);
   };
 
