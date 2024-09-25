@@ -8,8 +8,9 @@ export const loginSlice = createSlice({
   },
   reducers: {
     setUserLoggedIn: (state, action) => {
+      console.log("Action Payload:", action.payload);
       state.userLoggedIn = action.payload.userLoggedIn;
-      state.user_id = action.payload.userId;
+      state.user_id = action.payload.user_id; 
       console.log("slice", state.user_id)
 
       
