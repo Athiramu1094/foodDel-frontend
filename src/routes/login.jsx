@@ -31,10 +31,11 @@ const Login = () => {
             .then(response => {
                 
                 const { success, user } = response.data;
-                
+                console.log("Login response:", response.data);
                 if (success && user) {
-                
+                    console.log("login.jsx", user)
                     dispatch(setUserLoggedIn({ userLoggedIn: success, user_id: user._id }));
+                    console.log("login.jsx", user._id)
                 if (redirectPath) {
                     navigate(redirectPath);
                 } else {
