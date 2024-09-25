@@ -10,6 +10,7 @@ export const loginSlice = createSlice({
     setUserLoggedIn: (state, action) => {
       state.userLoggedIn = action.payload.userLoggedIn;
       state.user_id = action.payload.userId;
+      console.log("slice", state.user_id)
 
       
     },
