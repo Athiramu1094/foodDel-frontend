@@ -74,6 +74,8 @@ header {
 
 .searchBar {
   display: flex;
+  flex-direction: row;
+  
   align-items: center;
   margin: 1rem auto;
   text-align: center;
@@ -85,14 +87,21 @@ header {
   background-color: white;
 }
 
+.searchBar-test{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
 .searchIcon {
   padding: 0.5rem;
+  padding-left: 1rem;
   color: #888;
   border: none;
 }
 
 .searchBar input {
-  flex: 1;
+  
   padding: 0.5rem 1rem;
   font-size: 1rem;
   border: none;
@@ -109,6 +118,24 @@ header {
   animation: fadein 3s ease-in-out forwards;
 }
 
+.result-image{
+  width: 10%;
+}
+.searchResults {
+  width: 100%;
+  max-width: 600px;
+  border: 1px solid #ddd;
+  border-radius: 2rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  background-color: white;
+  margin: 1rem auto;
+  padding: 1rem;
+  position: relative; 
+  z-index: 10;
+}
+
+
+
 @keyframes fadein {
   0% {
     opacity: 0;
@@ -117,6 +144,8 @@ header {
     opacity: 1;
   }
 }
+
+
 
 @media (max-width: 768px) {
   header {
@@ -150,6 +179,9 @@ header {
     display: none;
   }
 }
+
+
+
 
 @media (max-width: 480px) {
   header {
@@ -261,7 +293,7 @@ header {
   flex: 1;
   max-width: 200px;
   margin-bottom: 1rem;
-  text-align: center; /* Center-align content */
+  text-align: center;
 }
 
 .delivery-area h3 {
