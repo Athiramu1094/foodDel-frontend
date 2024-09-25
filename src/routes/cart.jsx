@@ -16,7 +16,9 @@ import "./cart.css";
 const Cart = (req, res) => {
   const items = useSelector((state) => state.cart.items);
   const userLoggedIn = useSelector((state) => state.login.userLoggedIn);
+ 
   const userId = useSelector((state) => state.login.user_id);
+  console.log("user", userId)
 
 
 
@@ -113,7 +115,7 @@ const Cart = (req, res) => {
   
 
     try {
-  
+      console.log("order", userId)
       const createOrderResponse = await axiosInstance.post("/order/", {
         items,
         address,
