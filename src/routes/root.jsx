@@ -58,7 +58,7 @@ const Root = () => {
         dispatch(
           setUserLoggedIn({
             userLoggedIn: success,
-            userId: user ? user._id : null,
+            user_id: user ? user._id : null,
           })
         );
       })
