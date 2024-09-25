@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Header from "./header";
 import { useSelector, useDispatch } from "react-redux";
 import {
   decrementQuantity,
   incrementQuantity,
   removeItem,
-  addItemToCart, 
+  addItemToCart,
 } from "../features/cart/cartSlice";
 import { loadStripe } from "@stripe/stripe-js/pure";
 import { axiosInstance } from "../../config/axiosInstance";
@@ -13,12 +13,12 @@ import { useNavigate } from "react-router-dom";
 
 import "./cart.css";
 
-const Cart = () => {
+const Cart = (req, res) => {
   const items = useSelector((state) => state.cart.items);
   const userLoggedIn = useSelector((state) => state.login.userLoggedIn);
   const userId = useSelector((state) => state.login.user_id);
 
-  console.log("User ID from Redux:", userId);
+
 
   const restaurantId = items.length > 0 ? items[0].restaurantId : null;
   const [address, setAddress] = useState("");
@@ -29,18 +29,31 @@ const Cart = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const isRestoringSession = useRef(false); // Moved inside the component
 
   useEffect(() => {
-    const sessionItems = [];
-    for (let i = 0; i < sessionStorage.length; i++) {
-      const key = sessionStorage.key(i);
-      const item = JSON.parse(sessionStorage.getItem(key));
-      if (item) sessionItems.push(item);
-    }
-    if (sessionItems.length) {
-      sessionItems.forEach(item => dispatch(addItemToCart(item))); 
+    if (!isRestoringSession.current) {
+      // Prevent double addition
+      isRestoringSession.current = true;
+      const sessionItems = [];
+      for (let i = 0; i < sessionStorage.length; i++) {
+        const key = sessionStorage.key(i);
+        const item = JSON.parse(sessionStorage.getItem(key));
+        if (item) sessionItems.push(item);
+      }
+  
+      
+  
+      if (sessionItems.length) {
+        sessionItems.forEach((item) => {
+      
+          dispatch(addItemToCart({ ...item, isRestoring: true }));
+        });
+      }
     }
   }, [dispatch]);
+  
+
 
   useEffect(() => {
     sessionStorage.clear();
@@ -49,7 +62,10 @@ const Cart = () => {
     });
   }, [items]);
 
-  const totalPrice = items.reduce((total, item) => total + item.price * item.quantity, 0);
+  const totalPrice = items.reduce(
+    (total, item) => total + item.price * item.quantity,
+    0
+  );
   const finalPrice = Math.max(totalPrice - discount, 0);
 
   const handleAddressChange = (event) => {
@@ -72,7 +88,11 @@ const Cart = () => {
     } else {
       setDiscount(0);
       setCouponApplied(false);
-      setCouponError(type === "10%" ? "Coupon requires a minimum of ₹200" : "Coupon requires a minimum of ₹500");
+      setCouponError(
+        type === "10%"
+          ? "Coupon requires a minimum of ₹200"
+          : "Coupon requires a minimum of ₹500"
+      );
     }
     setShowCouponOptions(false);
   };
@@ -83,71 +103,78 @@ const Cart = () => {
     setCouponError("");
   };
 
-  const makePayment = async () => {
-    console.log("Initiating payment process...");
-  
+  const makePayment = async (req, res) => {
+    
+
     if (!userLoggedIn) {
-      console.log("User not logged in, redirecting to login page.");
+      
       return navigate("/login?redirect=/cart");
     }
   
-    console.log("User ID:", userId);
-    console.log("Address:", address);
-    console.log("Items in cart:", items);
-  
+
     try {
-      console.log("Creating order...");
+  
       const createOrderResponse = await axiosInstance.post("/order/", {
         items,
         address,
         userId,
         restaurantId,
       });
-      console.log("Order created successfully:", createOrderResponse.data);
-  
-      const stripe = await loadStripe(import.meta.env.VITE_STRIPE_publishable_key);
+      
+      const stripe = await loadStripe(
+        import.meta.env.VITE_STRIPE_publishable_key
+      );
       const sanitizedItems = items.map((item) => ({
         _id: item._id,
         name: item.name,
         price: item.price,
         quantity: item.quantity,
       }));
-      console.log("Sanitized items for payment:", sanitizedItems);
-  
-      console.log("Creating checkout session...");
-      const response = await axiosInstance.post("/payment/create-checkout-session", {
-        items: sanitizedItems,
-      });
-      console.log("Checkout session response:", response.data); 
+      
+
+    
+      const response = await axiosInstance
+        .post("/payment/create-checkout-session", {
+          items: sanitizedItems,
+        })
+        .catch((e) => {
+          
+        });
+      
       const sessionId = response?.data?.sessionId;
-  
-      console.log("Session ID for checkout:", sessionId);
+
+      
       if (!sessionId) {
-        console.error("No session ID returned from checkout session creation.");
+        
         return;
       }
-  
-      console.log("Redirecting to checkout with session ID:", sessionId);
+
+      
       const result = await stripe.redirectToCheckout({ sessionId: sessionId });
-  
+
       if (result.error) {
-        console.error("Stripe checkout error:", result.error.message);
+       
       } else {
-        console.log("Checkout redirection successful.");
+       
       }
     } catch (error) {
       console.error("Payment error:", error);
     }
   };
-  
+
   return (
     <main>
       <Header />
       {items.length === 0 ? (
         <div className="empty-cart">
-          <img className="emptycart-img" src="/emptycart.png" alt="Empty cart" />
+          <img
+            className="emptycart-img"
+            src="/emptycart.png"
+            alt="Empty cart"
+          />
           <h3>
-            <span className="emptycart-span">Oops!</span> <br /> Your cart looks empty...
+            <span className="emptycart-span">Oops!</span> <br /> Your cart looks
+            empty...
           </h3>
         </div>
       ) : (
@@ -198,7 +225,10 @@ const Cart = () => {
                         +
                       </button>
                     </div>
-                    <button className="delete-btn" onClick={() => handleRemoveItem(item._id)}>
+                    <button
+                      className="delete-btn"
+                      onClick={() => handleRemoveItem(item._id)}
+                    >
                       Remove Item
                     </button>
                   </div>
@@ -210,20 +240,39 @@ const Cart = () => {
 
               {/* Coupon Section */}
               <div className="coupon">
-                <span className="material-symbols-outlined">credit_card_heart</span>
-                <button className="coupon-btn" onClick={toggleCouponOptions}>Apply Coupon</button>
+                <span className="material-symbols-outlined">
+                  credit_card_heart
+                </span>
+                <button className="coupon-btn" onClick={toggleCouponOptions}>
+                  Apply Coupon
+                </button>
               </div>
 
               {showCouponOptions && !couponApplied && (
-                <div>
-                  <button className="apply-coupon" onClick={() => applyCoupon("10%")}>10% Off on orders above ₹200</button>
-                  <button className="apply-coupon" onClick={() => applyCoupon("25%")}>25% Off on orders above ₹500</button>
-                  {couponError && <p className="coupon-error">{couponError}</p>}
+                <div className="coupon-options">
+                  <button className="offer-btn" onClick={() => applyCoupon("10%")}>
+                    <span className="offer-name">FOODI10 | Apply Now</span><br />
+                    10% off on orders above ₹200
+                  </button>
+                  <button className="offer-btn" onClick={() => applyCoupon("25%")}>
+                    <span className="offer-name">FOODI25 | Apply Now</span><br />
+                    25% off on orders above ₹500
+                  </button>
                 </div>
               )}
 
-              {couponApplied && <h3>Discount ₹{discount}</h3>}
-              <h3>Final Price ₹{finalPrice}</h3>
+{couponApplied && !couponError && (
+  <div className="discount-summary">
+    <p className="coupon-applied">Coupon applied. You save ₹{discount.toFixed(2)}!</p>
+    <h4>You need to pay: ₹{finalPrice.toFixed(2)}</h4>
+  </div>
+)}
+
+<div className="cancellation">
+  <p>Review your order and address details to avoid cancellations</p>
+  <h3>Avoid cancellation as it leads to food wastage.</h3>
+</div>
+
             </section>
           </div>
         </div>
