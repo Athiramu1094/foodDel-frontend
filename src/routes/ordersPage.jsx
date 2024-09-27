@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import Header from "./header";
-import './OrdersPage.css'; 
+import './ordersPage.css'; 
 
 const OrdersPage = () => {
   const userId = useSelector((state) => state.login.user_id); 
