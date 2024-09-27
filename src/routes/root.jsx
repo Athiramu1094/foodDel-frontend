@@ -24,7 +24,7 @@ const Root = () => {
 
   const handleSearch = async (e) => {
     e.preventDefault();
-    setError(""); // Reset error state before new search
+    setError(""); 
     try {
       const response = await axios.get(
         `${import.meta.env.VITE_API_URL}/food/search?query=${query}`
@@ -40,10 +40,10 @@ const Root = () => {
     }
   };
 
-  // Handle clicks outside of the search results
+ 
   const handleClickOutside = (event) => {
     if (resultsRef.current && !resultsRef.current.contains(event.target)) {
-      setResults([]); // Clear results when clicking outside
+      setResults([]); 
     }
   };
 
@@ -87,7 +87,11 @@ const Root = () => {
     location.pathname.startsWith("/terms") ||
     location.pathname.startsWith("/privacyPolicy") ||
     location.pathname === "/payment/success" ||
+    location.pathname === "/ordersPage" ||
     location.pathname === "/payment/cancel";
+
+    const hideFooter =
+    location.pathname === "/ordersPage"; 
 
   const handleLogout = async (event) => {
     console.log("logout");
@@ -136,6 +140,11 @@ const Root = () => {
                     </span>
                   </Link>
                 </li>
+                <li>
+                  <Link className="navlink" to="/ordersPage">
+                    My Orders
+                  </Link>
+                </li>
                 {userLoggedIn ? (
                   <li>
                     <Link
@@ -153,6 +162,7 @@ const Root = () => {
                     </Link>
                   </li>
                 )}
+                
               </ul>
             </nav>
           </div>
@@ -206,42 +216,44 @@ const Root = () => {
       <main>
         <Outlet />
       </main>
-      <footer>
-        <div className="footer-container">
-          <div className="footer-logo">
-            <HashLink to="/#menu">
-              <img className="logo" src="/logoYellow.png" alt="logo" />
-            </HashLink>
-            <span>@ Copyright 2024 FOODIKO. All rights Reserved.</span>
-            <p>
-              Welcome to our online order website! Here, you can browse our wide
-              selection of products and place orders from the comfort of your
-              own home.
-            </p>
+      {!hideFooter && (  
+        <footer>
+          <div className="footer-container">
+            <div className="footer-logo">
+              <HashLink to="/#menu">
+                <img className="logo" src="/logoYellow.png" alt="logo" />
+              </HashLink>
+              <span>@ Copyright 2024 FOODIKO. All rights Reserved.</span>
+              <p>
+                Welcome to our online order website! Here, you can browse our wide
+                selection of products and place orders from the comfort of your
+                own home.
+              </p>
+            </div>
+            <div className="footer-links">
+              <Link to="/aboutus" className="footerLink">
+                About us
+              </Link>
+              <Link to="/terms" className="footerLink">
+                Terms & Conditions
+              </Link>
+              <Link to="/privacyPolicy" className="footerLink">
+                Privacy Policy
+              </Link>
+            </div>
+            <div className="delivery-area">
+              <h3>We deliver here</h3>
+              <ul>
+                <li>Maple Avenue</li>
+                <li>Oak Street</li>
+                <li>Pine Road</li>
+                <li>Elmwood Drive</li>
+                <li>Birch Street</li>
+              </ul>
+            </div>
           </div>
-          <div className="footer-links">
-            <Link to="/aboutus" className="footerLink">
-              About us
-            </Link>
-            <Link to="/terms" className="footerLink">
-              Terms & Conditions
-            </Link>
-            <Link to="/privacyPolicy" className="footerLink">
-              Privacy Policy
-            </Link>
-          </div>
-          <div className="delivery-area">
-            <h3>We deliver here</h3>
-            <ul>
-              <li>Maple Avenue</li>
-              <li>Oak Street</li>
-              <li>Pine Road</li>
-              <li>Elmwood Drive</li>
-              <li>Birch Street</li>
-            </ul>
-          </div>
-        </div>
-      </footer>
+        </footer>
+      )}
     </>
   );
 };

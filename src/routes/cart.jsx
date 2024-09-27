@@ -72,6 +72,7 @@ const Cart = (req, res) => {
 
   const handleAddressChange = (event) => {
     setAddress(event.target.value);
+    
   };
 
   const handleRemoveItem = (itemId) => {
@@ -115,7 +116,7 @@ const Cart = (req, res) => {
   
 
     try {
-      console.log("order", userId)
+      console.log("Items before sending to backend:", JSON.stringify(items, null, 2));
       const createOrderResponse = await axiosInstance.post("/order/", {
         items,
         address,
@@ -123,9 +124,21 @@ const Cart = (req, res) => {
         restaurantId,
       });
       
+
+
+const orderData = createOrderResponse.data; 
+
+console.log(orderData); 
+
+
+
+
+
       const stripe = await loadStripe(
         import.meta.env.VITE_STRIPE_publishable_key
       );
+      
+      
       const sanitizedItems = items.map((item) => ({
         _id: item._id,
         name: item.name,
@@ -134,7 +147,8 @@ const Cart = (req, res) => {
       }));
       
 
-    
+      
+
       const response = await axiosInstance
         .post("/payment/create-checkout-session", {
           items: sanitizedItems,

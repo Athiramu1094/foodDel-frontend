@@ -1,0 +1,105 @@
+
+.orders-page {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    margin-top: 5rem;
+}
+
+
+.orders-title {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 2rem;
+    color: #333;
+}
+
+.error-message {
+    color: red;
+    text-align: center;
+}
+
+
+.orders-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+
+.order-item {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    margin: 10px 0;
+    padding: 15px;
+    background-color: #f9f9f9;
+}
+
+
+.order-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; 
+}
+
+
+.order-info {
+    flex: 1; 
+    margin-right: 20px;
+}
+
+
+.orders-restaurant-name {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+
+.orders-total-amount,
+.order-status {
+    margin: 5px 0;
+}
+
+
+.ordered-items {
+    display: flex; 
+    flex-direction: column; 
+}
+
+
+.ordered-item {
+    border-top: 1px solid #ddd;
+    padding: 10px 0;
+}
+
+
+.orders-food-name {
+    font-weight: bold;
+}
+
+
+.food-image {
+    width: 100px;
+    height: auto;
+    border-radius: 5px;
+    display: block;
+    margin: 5px 0;
+}
+
+.orders-food-price,
+.orders-food-quantity {
+    margin: 5px 0;
+}
+
+@media (max-width: 768px) {
+    .orders-title {
+        font-size: 1.5rem;
+    }
+
+    .orders-restaurant-name {
+        font-size: 1.2rem;
+    }
+
+    .ordered-item {
+        padding: 8px 0;
+    }
+}
