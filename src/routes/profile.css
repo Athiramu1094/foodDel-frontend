@@ -1,0 +1,95 @@
+
+
+
+  
+  .profile-container {
+    background-color: beige;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    max-width: 400px;
+    margin: auto;
+    margin-top: 10rem;
+  }
+  
+  .profile-heading {
+    text-align: center;
+    color: #333;
+  }
+  
+  .profile-form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .form-group {
+    margin-bottom: 15px; /* Spacing between form groups */
+  }
+  
+  .form-label {
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #555;
+  }
+  
+  .form-input,
+  .form-select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+  }
+  
+  .form-input::placeholder {
+    color: #aaa;
+  }
+  
+  .submit-button {
+    padding: 10px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  .submit-button:hover {
+    background-color: #218838;
+  }
+  
+  .loading-message {
+    text-align: center;
+    font-size: 18px;
+    color: #333;
+  }
+  
+  .error-message {
+    color: red;
+    text-align: center;
+    margin-top: 15px;
+  }
+
+  .popup-message {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: rgba(0, 128, 0, 0.9); /* Green background */
+    color: white;
+    padding: 15px;
+    border-radius: 5px;
+    z-index: 1000; /* Ensure it appears above other elements */
+    animation: fadeIn 0.5s ease, fadeOut 0.5s ease 2.5s; /* Optional fade animations */
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  @keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+  
+  

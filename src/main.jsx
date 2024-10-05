@@ -21,6 +21,7 @@ import Aboutus from './routes/aboutus.jsx';
 import Terms from './routes/terms.jsx';
 import PrivacyPolicy from './routes/privacyPolicy.jsx';
 import Orders from './routes/ordersPage.jsx';
+import Profile from './routes/profile.jsx';
 
 const router = createBrowserRouter([
   {
@@ -90,6 +91,11 @@ const router = createBrowserRouter([
   {
     path:"/ordersPage",
     element:<Orders/>
+  },
+
+  {
+    path:"/profile",
+    element:<Profile/>
   }
 
   ]

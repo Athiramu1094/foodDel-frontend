@@ -10,32 +10,29 @@ import {
 import { loadStripe } from "@stripe/stripe-js/pure";
 import { axiosInstance } from "../../config/axiosInstance";
 import { useNavigate } from "react-router-dom";
-
 import "./cart.css";
 
-const Cart = (req, res) => {
+const Cart = () => {
   const items = useSelector((state) => state.cart.items);
   const userLoggedIn = useSelector((state) => state.login.userLoggedIn);
-
   const userId = useSelector((state) => state.login.user_id);
-  console.log("user", userId)
-
-
-
   const restaurantId = items.length > 0 ? items[0].restaurantId : null;
+
   const [address, setAddress] = useState("");
   const [discount, setDiscount] = useState(0);
   const [showCouponOptions, setShowCouponOptions] = useState(false);
   const [couponApplied, setCouponApplied] = useState(false);
   const [couponError, setCouponError] = useState("");
+  const [addressSaved, setAddressSaved] = useState(false); 
+  const [isEditing, setIsEditing] = useState(false); 
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const isRestoringSession = useRef(false); // Moved inside the component
+  const isRestoringSession = useRef(false);
 
+ 
   useEffect(() => {
     if (!isRestoringSession.current) {
-      // Prevent double addition
       isRestoringSession.current = true;
       const sessionItems = [];
       for (let i = 0; i < sessionStorage.length; i++) {
@@ -43,20 +40,15 @@ const Cart = (req, res) => {
         const item = JSON.parse(sessionStorage.getItem(key));
         if (item) sessionItems.push(item);
       }
-  
-      
-  
       if (sessionItems.length) {
         sessionItems.forEach((item) => {
-      
           dispatch(addItemToCart({ ...item, isRestoring: true }));
         });
       }
     }
   }, [dispatch]);
-  
 
-
+ 
   useEffect(() => {
     sessionStorage.clear();
     items.forEach((item) => {
@@ -64,20 +56,36 @@ const Cart = (req, res) => {
     });
   }, [items]);
 
-  const totalPrice = items.reduce(
-    (total, item) => total + item.price * item.quantity,
-    0
-  );
-  const finalPrice = Math.max(totalPrice - discount, 0);
 
+  useEffect(() => {
+    const savedAddress = localStorage.getItem("userAddress");
+    if (savedAddress) {
+      setAddress(savedAddress);
+      setAddressSaved(true);
+    }
+  }, []);
+
+
+  const saveAddress = () => {
+    localStorage.setItem("userAddress", address);
+    setAddressSaved(true);
+    setIsEditing(false);
+  };
+
+  
+  const editAddress = () => {
+    setIsEditing(true); 
+  };
+
+ 
   const handleAddressChange = (event) => {
     setAddress(event.target.value);
-    
   };
 
   const handleRemoveItem = (itemId) => {
     dispatch(removeItem(itemId));
   };
+
 
   const applyCoupon = (type) => {
     if (type === "10%" && totalPrice > 200) {
@@ -106,91 +114,63 @@ const Cart = (req, res) => {
     setCouponError("");
   };
 
-  const makePayment = async (req, res) => {
-    
-
+ 
+  const makePayment = async () => {
     if (!userLoggedIn) {
-      
       return navigate("/login?redirect=/cart");
     }
-  
+
+    if (address.length < 5) {
+      alert("Please provide a valid address.");
+      return;
+    }
 
     try {
-      console.log("Items before sending to backend:", JSON.stringify(items, null, 2));
       const createOrderResponse = await axiosInstance.post("/order/", {
         items,
         address,
         userId,
         restaurantId,
       });
-      
 
-
-const orderData = createOrderResponse.data; 
-
-console.log(orderData); 
-
-
-
-
-
-      const stripe = await loadStripe(
-        import.meta.env.VITE_STRIPE_publishable_key
-      );
-      
-      
+      const stripe = await loadStripe(import.meta.env.VITE_STRIPE_publishable_key);
       const sanitizedItems = items.map((item) => ({
         _id: item._id,
         name: item.name,
         price: item.price,
         quantity: item.quantity,
       }));
-      
 
-      
+      const response = await axiosInstance.post("/payment/create-checkout-session", {
+        items: sanitizedItems,
+      });
 
-      const response = await axiosInstance
-        .post("/payment/create-checkout-session", {
-          items: sanitizedItems,
-        })
-        .catch((e) => {
-          
-        });
-      
       const sessionId = response?.data?.sessionId;
-
-      
       if (!sessionId) {
-        
+        alert("Error creating payment session. Please try again.");
         return;
       }
 
-      
-      const result = await stripe.redirectToCheckout({ sessionId: sessionId });
-
-      if (result.error) {
-       
-      } else {
-       
-      }
+      await stripe.redirectToCheckout({ sessionId });
     } catch (error) {
       console.error("Payment error:", error);
     }
   };
+
+  const totalPrice = items.reduce(
+    (total, item) => total + item.price * item.quantity,
+    0
+  );
+  const finalPrice = Math.max(totalPrice - discount, 0);
 
   return (
     <main>
       <Header />
       {items.length === 0 ? (
         <div className="empty-cart">
-          <img
-            className="emptycart-img"
-            src="/emptycart.png"
-            alt="Empty cart"
-          />
+          <img className="emptycart-img" src="/emptycart.png" alt="Empty cart" />
           <h3>
-            <span className="emptycart-span">Oops!</span> <br /> Your cart looks
-            empty...
+            <span className="emptycart-span">Oops!</span> <br /> Your cart looks empty...
           </h3>
         </div>
       ) : (
@@ -201,19 +181,30 @@ console.log(orderData);
                 <div className="home-address">
                   <h4>Home</h4>
                   <span className="material-symbols-outlined">garage_home</span>
+                  {addressSaved && !isEditing ? (
+                  <>
+                    <button onClick={editAddress}>Edit Address</button>
+                  </>
+                ) : (
+                  <>
+                    <button onClick={saveAddress}>Save Address</button>
+                  </>
+                )}
                 </div>
                 <form className="delivery-form">
                   <textarea
                     id="details"
                     className="addressdetails"
-                    placeholder="Name&Addr"
+                    placeholder="Name & Address"
                     required
                     value={address}
                     onChange={handleAddressChange}
+                    disabled={addressSaved && !isEditing} 
                   ></textarea>
                 </form>
+                
               </div>
-              <button onClick={makePayment}>SAVE ADDRESS & PROCEED</button>
+              <button onClick={makePayment}>PROCEED TO PAYMENT</button>
             </section>
           </div>
           <div className="item-price-coupon">
@@ -253,12 +244,8 @@ console.log(orderData);
             </article>
             <section>
               <h3>Total Price ₹{totalPrice}</h3>
-
-              {/* Coupon Section */}
               <div className="coupon">
-                <span className="material-symbols-outlined">
-                  credit_card_heart
-                </span>
+                <span className="material-symbols-outlined">credit_card_heart</span>
                 <button className="coupon-btn" onClick={toggleCouponOptions}>
                   Apply Coupon
                 </button>
@@ -277,18 +264,19 @@ console.log(orderData);
                 </div>
               )}
 
-{couponApplied && !couponError && (
-  <div className="discount-summary">
-    <p className="coupon-applied">Coupon applied. You save ₹{discount.toFixed(2)}!</p>
-    <h4>You need to pay: ₹{finalPrice.toFixed(2)}</h4>
-  </div>
-)}
+              {couponApplied && !couponError && (
+                <div className="discount-summary">
+                  <p className="coupon-applied">Coupon applied. You save ₹{discount.toFixed(2)}!</p>
+                  <h4>You need to pay: ₹{finalPrice.toFixed(2)}</h4>
+                </div>
+              )}
 
-<div className="cancellation">
-  <p>Review your order and address details to avoid cancellations</p>
-  <h3>Avoid cancellation as it leads to food wastage.</h3>
-</div>
+              {couponError && <p className="coupon-error">{couponError}</p>}
 
+              <div className="cancellation">
+                <p>Review your order and address details to avoid cancellations</p>
+                <h3>Avoid cancellation as it leads to food wastage.</h3>
+              </div>
             </section>
           </div>
         </div>

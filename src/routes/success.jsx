@@ -22,6 +22,8 @@ const Success = () => {
             </dotlottie-player>
             <h2>Your Order Has Been Successfully Placed!</h2>
             <Link to="/">Explore More</Link>
+            <Link to="/ordersPage">Order History</Link>
+
             
 
             </div>

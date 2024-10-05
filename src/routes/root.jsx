@@ -9,7 +9,7 @@ import { HashLink } from "react-router-hash-link";
 const Root = () => {
   const userLoggedIn = useSelector((state) => state.login.userLoggedIn);
   const userId = useSelector((state) => state.login.user_id);
-  
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -17,6 +17,7 @@ const Root = () => {
   const [results, setResults] = useState([]);
   const [error, setError] = useState("");
   const resultsRef = useRef();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const handleInputChange = (e) => {
     setQuery(e.target.value);
@@ -24,7 +25,7 @@ const Root = () => {
 
   const handleSearch = async (e) => {
     e.preventDefault();
-    setError(""); 
+    setError("");
     try {
       const response = await axios.get(
         `${import.meta.env.VITE_API_URL}/food/search?query=${query}`
@@ -40,10 +41,13 @@ const Root = () => {
     }
   };
 
- 
   const handleClickOutside = (event) => {
     if (resultsRef.current && !resultsRef.current.contains(event.target)) {
-      setResults([]); 
+      setResults([]); // For search result closing
+    }
+    const dropdown = document.querySelector(".dropdown-content");
+    if (dropdown && !dropdown.contains(event.target) && !event.target.classList.contains("dropdown-button")) {
+      setDropdownOpen(false); // Close dropdown on outside click
     }
   };
 
@@ -65,10 +69,10 @@ const Root = () => {
       .catch((error) => {
         dispatch(setUserLoggedIn({ userLoggedIn: false, userId: null }));
       });
-    
+
     // Add event listener for clicks outside
     document.addEventListener("mousedown", handleClickOutside);
-    
+
     // Cleanup listener on component unmount
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
@@ -88,10 +92,10 @@ const Root = () => {
     location.pathname.startsWith("/privacyPolicy") ||
     location.pathname === "/payment/success" ||
     location.pathname === "/ordersPage" ||
+    location.pathname === "/profile" ||
     location.pathname === "/payment/cancel";
 
-    const hideFooter =
-    location.pathname === "/ordersPage"; 
+  const hideFooter = location.pathname === "/profile" || location.pathname === "/ordersPage";
 
   const handleLogout = async (event) => {
     console.log("logout");
@@ -109,6 +113,10 @@ const Root = () => {
     } catch (error) {
       console.error("Logout failed:", error);
     }
+  };
+
+  const toggleDropdown = () => {
+    setDropdownOpen(!dropdownOpen);
   };
 
   return (
@@ -140,20 +148,32 @@ const Root = () => {
                     </span>
                   </Link>
                 </li>
-                <li>
-                  <Link className="navlink" to="/ordersPage">
-                    My Orders
-                  </Link>
-                </li>
+
                 {userLoggedIn ? (
-                  <li>
-                    <Link
-                      onClick={handleLogout}
-                      to="/logout"
-                      className="navlink"
-                    >
-                      Logout
-                    </Link>
+                  <li className="dropdown">
+                    <button className="navlink dropdown-button" onClick={toggleDropdown}>
+                      My Account
+                      <span className="material-symbols-outlined drop-down">expand_more</span>
+                    </button>
+                    {dropdownOpen && (
+                      <ul className="dropdown-content">
+                        <li>
+                          <Link className="navlink" to="/profile">
+                            My Profile
+                          </Link>
+                        </li>
+                        <li>
+                          <Link className="navlink" to="/ordersPage">
+                            My Orders
+                          </Link>
+                        </li>
+                        <li>
+                          <Link onClick={handleLogout} to="/logout" className="navlink">
+                            Logout
+                          </Link>
+                        </li>
+                      </ul>
+                    )}
                   </li>
                 ) : (
                   <li>
@@ -162,10 +182,10 @@ const Root = () => {
                     </Link>
                   </li>
                 )}
-                
               </ul>
             </nav>
           </div>
+
           <section>
             <div className="searchSection">
               <p>Discover the best food & drinks near you</p>
@@ -184,30 +204,25 @@ const Root = () => {
                     />
                   </div>
                 </form>
+              </div>
+              {/* Search Results */}
+              {error && <p className="error-message">{error}</p>}
+              {results.length > 0 && (
+                <div ref={resultsRef} className="searchResults">
+                  <ul>
+                    {results.map((item) => (
+                      <li key={item._id} className="result-card">
+                        <Link to={`/category/${item.category}`}>
+                          <div className="result-content">
+                            <img src={item.image} alt={item.name} className="result-image" />
+                            <span>{item.name}</span>
+                          </div>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                {/* Search Results */}
-                {error && <p className="error-message">{error}</p>}
-                {results.length > 0 && (
-                  <div ref={resultsRef} className="searchResults">
-                    <ul>
-                      {results.map((item) => (
-                        <li key={item._id} className="result-card">
-                          <Link to={`/category/${item.category}`}>
-                            <div className="result-content">
-                              <img
-                                src={item.image}
-                                alt={item.name}
-                                className="result-image"
-                              />
-                              <span>{item.name}</span>
-                            </div>
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              
+              )}
             </div>
           </section>
         </header>
@@ -216,7 +231,7 @@ const Root = () => {
       <main>
         <Outlet />
       </main>
-      {!hideFooter && (  
+      {!hideFooter && (
         <footer>
           <div className="footer-container">
             <div className="footer-logo">
