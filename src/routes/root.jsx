@@ -5,6 +5,8 @@ import { Link, Outlet, useNavigate } from "react-router-dom";
 import { setUserLoggedIn } from "../features/login/loginSlice";
 import { useLocation } from "react-router-dom";
 import { HashLink } from "react-router-hash-link";
+import ScrollToTop from "./scrolltop.jsx";
+
 
 const Root = () => {
   const userLoggedIn = useSelector((state) => state.login.userLoggedIn);
@@ -121,6 +123,7 @@ const Root = () => {
 
   return (
     <>
+    <ScrollToTop />
       {!hideHeader && (
         <header>
           <div className="navbar">
