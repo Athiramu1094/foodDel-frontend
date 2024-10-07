@@ -13,7 +13,10 @@ const OrdersPage = () => {
     const fetchOrders = async () => {
       try {
         const response = await axios.get(`${import.meta.env.VITE_API_URL}/order?userId=${userId}`);
-        setOrders(response.data.orders);
+        
+        const sortedOrders = response.data.orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        
+        setOrders(sortedOrders);
       } catch (error) {
         console.error('Error fetching orders:', error);
         setError('Could not fetch orders.');
